@@ -33,14 +33,7 @@ export default async function Home(props: {
     <>
       <Hero />
       
-      {/* --- OUR NEW AI SEARCH SECTION --- */}
-      <div className="py-12 bg-white border-b border-gray-200">
-        <h2 className="text-center text-2xl font-bold mb-6 text-black">
-          What are you looking for today?
-        </h2>
-        <AiSearch />
-      </div>
-      {/* --------------------------------- */}
+     
 
       <div className="py-12">
         <ul className="flex flex-col gap-x-6">

@@ -1,12 +1,11 @@
 // File: apps/backend/src/admin/routes/search-logs/page.tsx
-// --- PART 1 ---
+// --- PART 3 ---
 
 import { useState, useEffect } from "react"
-import { Container, Heading, Table } from "@medusajs/ui"
+import { Container, Heading, Table, Badge } from "@medusajs/ui"
 import { MagnifyingGlass } from "@medusajs/icons"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 
-// Medusa v2 requires this to be an arrow function!
 const SearchLogsPage = () => {
   const [logs, setLogs] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -24,39 +23,50 @@ const SearchLogsPage = () => {
       })
   }, [])
 
-  // End of Part 1
-  // --- PART 2 ---
-
   return (
     <Container>
       <div className="flex items-center justify-between mb-6">
-        <Heading level="h1">Customer Search Logs</Heading>
+        <Heading level="h1">Search Analytics</Heading>
       </div>
-
+      
       <Table>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Date</Table.HeaderCell>
-            <Table.HeaderCell>Customer Query</Table.HeaderCell>
-            <Table.HeaderCell>AI Response</Table.HeaderCell>
+            <Table.HeaderCell>Raw Query</Table.HeaderCell>
+            <Table.HeaderCell>AI Search Term</Table.HeaderCell>
+            <Table.HeaderCell>Results Found</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {isLoading ? (
             <Table.Row>
-              <Table.Cell colSpan={3} className="text-center py-6">Loading...</Table.Cell>
+              <Table.Cell colSpan={4} className="text-center py-6">Loading...</Table.Cell>
             </Table.Row>
           ) : logs.length === 0 ? (
             <Table.Row>
-              <Table.Cell colSpan={3} className="text-center py-6">No searches logged yet.</Table.Cell>
+              <Table.Cell colSpan={4} className="text-center py-6">No searches logged yet.</Table.Cell>
             </Table.Row>
           ) : (
             logs.map((log) => (
               <Table.Row key={log.id}>
                 <Table.Cell>{new Date(log.created_at).toLocaleDateString()}</Table.Cell>
-                <Table.Cell className="font-medium">{log.query}</Table.Cell>
-                <Table.Cell className="text-gray-500 max-w-md truncate" title={log.ai_response}>
-                  {log.ai_response}
+                <Table.Cell className="font-medium max-w-[200px] truncate" title={log.query}>
+                  {log.query}
+                </Table.Cell>
+                <Table.Cell>
+                  {log.search_term ? (
+                    <Badge color="grey">{log.search_term}</Badge>
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </Table.Cell>
+                <Table.Cell>
+                  {log.results_count > 0 ? (
+                    <Badge color="green">{log.results_count} found</Badge>
+                  ) : (
+                    <Badge color="red">0 found</Badge>
+                  )}
                 </Table.Cell>
               </Table.Row>
             ))
@@ -67,12 +77,10 @@ const SearchLogsPage = () => {
   )
 }
 
-// Export the component as default
 export default SearchLogsPage
 
-// Use defineRouteConfig to register the page in the sidebar (Medusa v2 requirement)
 export const config = defineRouteConfig({
-  label: "Search Logs",
+  label: "Search Analytics",
   icon: MagnifyingGlass,
 })
 // --- END OF CODE ---

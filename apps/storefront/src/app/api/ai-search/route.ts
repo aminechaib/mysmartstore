@@ -1,5 +1,5 @@
 // File: apps/storefront/src/app/api/ai-search/route.ts
-// --- PART 1 ---
+// --- PART 2 ---
 
 import { NextResponse } from "next/server";
 import { Mistral } from "@mistralai/mistralai";
@@ -7,7 +7,6 @@ import { Mistral } from "@mistralai/mistralai";
 const apiKey = process.env.MISTRAL_API_KEY;
 const client = new Mistral({ apiKey: apiKey });
 
-// The upgraded multilingual brain!
 const SYSTEM_PROMPT = `You are the exclusive personal shopping assistant for OUR premium e-commerce store. 
 CRITICAL RULES:
 1. NEVER suggest other websites or brands.
@@ -19,7 +18,6 @@ CRITICAL RULES:
   "message": "Your friendly 2-sentence response to the customer in their language",
   "search_term": "the English search term"
 }`;
-// --- PART 2 ---
 
 export async function POST(request: Request) {
   try {
@@ -35,14 +33,12 @@ export async function POST(request: Request) {
       { role: "user", content: userQuery }
     ];
 
-    // We tell Mistral to strictly return a JSON object
     const chatResponse = await client.chat.complete({
       model: "mistral-small-latest",
       messages: messages as any,
       responseFormat: { type: "json_object" }
     });
 
-    // 1. Parse the JSON response from Mistral
     const aiContent = chatResponse.choices?.[0]?.message?.content || "{}";
     let parsedAi;
     try {
@@ -54,7 +50,6 @@ export async function POST(request: Request) {
     const aiMessage = parsedAi.message || "I couldn't find anything.";
     const searchTerm = parsedAi.search_term || "";
 
-    // 2. Fetch real products from Medusa using the broad English search term
     let products = [];
     const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000";
     const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "";
@@ -79,10 +74,7 @@ export async function POST(request: Request) {
       }
     }
 
-// End of Part 2
-// --- PART 3 ---
-
-    // 3. Send the data to our Medusa Backend to be saved!
+    // ---> NEW: Send the search_term and results_count to the backend! <---
     try {
       const dbRes = await fetch(`${backendUrl}/store/search-log`, {
         method: "POST",
@@ -93,19 +85,20 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           query: userQuery,
           ai_response: aiMessage,
+          search_term: searchTerm,          // NEW: The clean English term
+          results_count: products.length,   // NEW: How many products were found
         }),
       });
 
       if (!dbRes.ok) {
         console.error("Backend rejected the save:", await dbRes.text());
       } else {
-        console.log("Search successfully logged to database!");
+        console.log("Search successfully logged to database with analytics!");
       }
     } catch (dbError) {
       console.error("Failed to connect to backend:", dbError);
     }
 
-    // 4. Send the smart response AND the products back to the frontend
     return NextResponse.json({ 
       success: true, 
       originalQuery: userQuery,
@@ -118,4 +111,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Something went wrong with the AI search." }, { status: 500 });
   }
 }
-// --- END OF CODE ---
+// End of Part 2

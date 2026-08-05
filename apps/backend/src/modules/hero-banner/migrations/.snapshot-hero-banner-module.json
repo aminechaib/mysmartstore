@@ -22,8 +22,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "query": {
-          "name": "query",
+        "badge_text": {
+          "name": "badge_text",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -33,46 +33,14 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "'✨ Exclusive Summer Event'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
         },
-        "ai_response": {
-          "name": "ai_response",
+        "headline_top": {
+          "name": "headline_top",
           "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "enumItems": [],
-          "mappedType": "text"
-        },
-        "search_term": {
-          "name": "search_term",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "enumItems": [],
-          "mappedType": "text"
-        },
-        "results_count": {
-          "name": "results_count",
-          "type": "integer",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -81,10 +49,58 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": "0",
+          "default": "'Discover Your'",
           "comment": null,
           "enumItems": [],
-          "mappedType": "integer"
+          "mappedType": "text"
+        },
+        "headline_bottom": {
+          "name": "headline_bottom",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'Perfect Style'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'Experience the new standard of modern fashion. Handpicked collections tailored to your unique taste.'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
         },
         "created_at": {
           "name": "created_at",
@@ -135,20 +151,20 @@
           "mappedType": "datetime"
         }
       },
-      "name": "search_log",
+      "name": "hero_banner",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "IDX_search_log_deleted_at",
+          "keyName": "IDX_hero_banner_deleted_at",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_search_log_deleted_at\" ON \"search_log\" (\"deleted_at\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_hero_banner_deleted_at\" ON \"hero_banner\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "search_log_pkey",
+          "keyName": "hero_banner_pkey",
           "columnNames": [
             "id"
           ],

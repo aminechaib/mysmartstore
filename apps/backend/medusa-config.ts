@@ -17,5 +17,8 @@ module.exports = defineConfig({
     searchLogModuleService: {
       resolve: "./modules/search-log", // <-- ADDED /src/ HERE
     },
+      heroBannerModuleService: {
+      resolve: "./src/modules/hero-banner",
+    },
   },
 } )
