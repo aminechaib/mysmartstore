@@ -1,35 +1,28 @@
 // File: apps/storefront/src/components/AiSearch.tsx
-// --- PART 1 ---
 
-"use client"; // This tells Next.js this is an interactive frontend component
+"use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function AiSearch() {
-  // These variables store our data while the user interacts with the page
   const [query, setQuery] = useState("");
   const [aiResponse, setAiResponse] = useState("");
+  const [products, setProducts] = useState<any[]>([]); // <-- New state for products
   const [isLoading, setIsLoading] = useState(false);
 
-// End of Part 1
-// --- PART 2 ---
-
-  // This function runs when the user submits their search
   const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the page from reloading
-    
-    if (!query.trim()) return; // Don't search if the input is empty
+    e.preventDefault();
+    if (!query.trim()) return;
 
     setIsLoading(true);
-    setAiResponse(""); // Clear the old response
+    setAiResponse("");
+    setProducts([]); // Clear old products
 
     try {
-      // Send the request to our Next.js API
       const res = await fetch("/api/ai-search", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
       });
 
@@ -37,6 +30,7 @@ export default function AiSearch() {
 
       if (data.success) {
         setAiResponse(data.aiResponse);
+        setProducts(data.products || []); // Save the products!
       } else {
         setAiResponse("Sorry, I had trouble understanding that. Please try again.");
       }
@@ -48,11 +42,8 @@ export default function AiSearch() {
     }
   };
 
-// End of Part 2
-// --- PART 3 ---
-
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
+    <div className="w-full max-w-4xl mx-auto p-4">
       <form onSubmit={handleSearch} className="relative flex items-center">
         <input
           type="text"
@@ -82,7 +73,29 @@ export default function AiSearch() {
           </p>
         </div>
       )}
+
+      {/* Display the Products Grid */}
+      {products.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-bold mb-4">Recommended for you:</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Link href={`/products/${product.handle}`} key={product.id} className="group">
+                <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                  {product.thumbnail ? (
+                    <img src={product.thumbnail} alt={product.title} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400">No Image</div>
+                  )}
+                  <div className="p-4 bg-white">
+                    <h4 className="font-semibold text-gray-900 truncate">{product.title}</h4>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-// --- END OF CODE ---
