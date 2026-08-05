@@ -47,6 +47,9 @@ importers:
       '@medusajs/framework':
         specifier: 2.18.0
         version: 2.18.0(@medusajs/cli@2.18.0(@types/node@20.19.26)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))(@types/node@20.19.26)(debug@4.4.3(supports-color@8.1.1))(ioredis@5.8.2(supports-color@8.1.1))(supports-color@8.1.1)(vite@5.4.21(@types/node@20.19.26)(terser@5.49.0))(zod@4.2.0)
+      '@medusajs/icons':
+        specifier: 2.18.0
+        version: 2.18.0(react@18.3.1)
       '@medusajs/medusa':
         specifier: 2.18.0
         version: 2.18.0(ce973f2a73f8de4e5408b9c4d8ed2850)
