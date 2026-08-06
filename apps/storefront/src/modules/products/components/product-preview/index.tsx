@@ -15,19 +15,11 @@ export default async function ProductPreview({
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
 }) {
-  // Get the correct price based on the customer's region
-  const { cheapestPrice } = getProductPrice({
-    product,
-    region,
-  })
+  const { cheapestPrice } = getProductPrice({ product, region })
 
   return (
-    <LocalizedClientLink
-      href={`/products/${product.handle}`}
-      className="group block w-full"
-    >
-      {/* Image Container with Hover Effects */}
-      <div className="relative overflow-hidden rounded-2xl bg-gray-50 transition-shadow duration-300 group-hover:shadow-lg">
+    <LocalizedClientLink href={`/products/${product.handle}`} className="group block w-full">
+      <div className="relative overflow-hidden rounded-2xl bg-gray-50 transition-all duration-500 group-hover:shadow-2xl">
         <Thumbnail
           thumbnail={product.thumbnail}
           images={product.images}
@@ -35,20 +27,14 @@ export default async function ProductPreview({
           isFeatured={isFeatured}
         />
         
-        {/* Dark Overlay & Sliding Button */}
-        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-          <div className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out bg-white text-black px-6 py-2 rounded-full font-semibold text-sm shadow-xl">
-            View Details
-          </div>
-        </div>
+        {/* Minimalist Hover Overlay */}
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      {/* Product Info */}
-      <div className="flex flex-col mt-4">
-        <p className="text-gray-900 font-semibold text-lg truncate" title={product.title}>
-          {product.title}
-        </p>
-        <div className="flex items-center gap-x-2 mt-1 text-gray-600">
+      {/* Clean Title & Price */}
+      <div className="flex justify-between items-center mt-4 px-1">
+        <p className="text-gray-900 font-medium text-sm truncate mr-4">{product.title}</p>
+        <div className="text-black font-bold text-sm bg-gray-100 px-3 py-1 rounded-full">
           {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
         </div>
       </div>

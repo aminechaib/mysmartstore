@@ -1,10 +1,9 @@
 // File: apps/storefront/src/modules/home/components/hero/index.tsx
-// --- PART 1 ---
 
 "use client" 
 
 import { motion } from "framer-motion"
-import AiSearch from "../../../../components/AiSearch"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 export default function Hero() {
   const containerVariants = {
@@ -19,9 +18,6 @@ export default function Hero() {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   }
-
-// End of Part 1
-// --- PART 2 ---
 
   return (
     <div className="relative min-h-[85vh] w-full bg-black flex items-center justify-center overflow-hidden">
@@ -60,8 +56,6 @@ export default function Hero() {
           </span>
         </motion.h1>
 
-
-
         {/* Description */}
         <motion.p
           variants={itemVariants}
@@ -70,12 +64,17 @@ export default function Hero() {
           Experience the new standard of modern fashion. Handpicked collections tailored to your unique taste, powered by intelligent search.
         </motion.p>
 
-        {/* AI Search Bar */}
-        <motion.div variants={itemVariants} className="w-full">
-          <AiSearch />
+        {/* Call to Action Button */}
+        <motion.div variants={itemVariants}>
+          <LocalizedClientLink href="/store">
+            <button
+              className="px-10 py-4 text-lg font-bold rounded-full hover:scale-105 transition-transform duration-300 bg-white text-black shadow-[0_0_40px_rgba(255,255,255,0.3 )]"
+            >
+              Explore All Products
+            </button>
+          </LocalizedClientLink>
         </motion.div>
       </motion.div>
     </div>
   )
 }
-// --- END OF CODE ---

@@ -1,83 +1,77 @@
+// File: apps/storefront/src/modules/store/components/refinement-list/index.tsx
+
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 
-import {
-  OPTION_VALUE_QUERY_KEY,
-  parseOptionValueIds,
-} from "@lib/util/product-option-filters"
-import OptionsPicker from "./options-picker"
-import SortProducts, { SortOptions } from "./sort-products"
+type SortOptions = "price_asc" | "price_desc" | "created_at"
 
-type RefinementListProps = {
-  sortBy: SortOptions
-  search?: boolean
-  hideOptionsPicker?: boolean
-  "data-testid"?: string
-}
-
-const RefinementList = ({
-  sortBy,
-  hideOptionsPicker = false,
-  "data-testid": dataTestId,
-}: RefinementListProps) => {
+export default function RefinementList({ sortBy }: { sortBy: SortOptions }) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const updateQueryParams = useCallback(
-    (updater: (params: URLSearchParams) => void) => {
-      const params = new URLSearchParams(searchParams.toString())
-      updater(params)
-
-      params.delete("page")
-
-      const queryString = params.toString()
-      const currentQuery = searchParams.toString()
-      const nextPath = queryString ? `${pathname}?${queryString}` : pathname
-      const currentPath = currentQuery
-        ? `${pathname}?${currentQuery}`
-        : pathname
-
-      if (nextPath !== currentPath) {
-        router.push(nextPath)
-      }
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams)
+      params.set(name, value)
+      return params.toString()
     },
-    [pathname, router, searchParams]
-  )
-
-  const setQueryParams = (name: string, value: string) =>
-    updateQueryParams((params) => params.set(name, value))
-
-  const selectedOptionValueIds = useMemo(
-    () => parseOptionValueIds(searchParams),
     [searchParams]
   )
 
-  const setOptionValueIds = (valueIds: string[]) =>
-    updateQueryParams((params) => {
-      params.delete(OPTION_VALUE_QUERY_KEY)
-      valueIds.forEach((valueId) =>
-        params.append(OPTION_VALUE_QUERY_KEY, valueId)
-      )
-    })
+  const setQueryParams = (name: string, value: string) => {
+    const query = createQueryString(name, value)
+    router.push(`${pathname}?${query}`)
+  }
+
+  const sortOptions = [
+    { value: "created_at", label: "✨ New Arrivals" },
+    { value: "price_asc", label: "💸 Price: Low to High" },
+    { value: "price_desc", label: "💎 Price: High to Low" },
+  ]
 
   return (
-    <div className="flex flex-col gap-12 py-4 mb-8 small:px-0 pl-6 small:min-w-[250px] small:ml-[1.675rem]">
-      <SortProducts
-        sortBy={sortBy}
-        setQueryParams={setQueryParams}
-        data-testid={dataTestId}
-      />
-      {!hideOptionsPicker && (
-        <OptionsPicker
-          selectedValueIds={selectedOptionValueIds}
-          setOptionValueIds={setOptionValueIds}
-        />
-      )}
+    <div className="flex flex-col gap-y-10">
+      {/* Modern Sort Buttons */}
+      <div>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+          Sort Collection
+        </h3>
+        <div className="flex flex-col gap-y-3">
+          {sortOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setQueryParams("sortBy", option.value)}
+              className={`text-left px-5 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                sortBy === option.value
+                  ? "bg-black text-white shadow-lg scale-[1.02]"
+                  : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:scale-[1.02]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Marketing / Trending Tags */}
+      <div>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+          Trending Searches
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {["Summer Edit", "Minimalist", "Luxury", "Everyday"].map((tag) => (
+            <span 
+              key={tag} 
+              className="px-4 py-2 bg-white border border-gray-200 text-gray-600 text-xs font-bold rounded-full cursor-pointer hover:border-black hover:text-black hover:shadow-sm transition-all duration-300"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
-
-export default RefinementList

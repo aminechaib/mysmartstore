@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { Container, Heading, Button, Input, Textarea, toast } from "@medusajs/ui"
-import { Picture } from "@medusajs/icons"
+import { Sparkles } from "@medusajs/icons"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 
 const HeroBannerPage = () => {
@@ -133,6 +133,6 @@ export default HeroBannerPage
 // This adds the page to your Admin Sidebar with a Picture icon!
 export const config = defineRouteConfig({
   label: "Hero Banner",
-  icon: Picture,
+  icon: Sparkles,
 })
 // --- END OF CODE ---
