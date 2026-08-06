@@ -20,5 +20,12 @@ module.exports = defineConfig({
       heroBannerModuleService: {
       resolve: "./src/modules/hero-banner",
     },
+        promoBarModuleService: {
+      resolve: "./src/modules/promo-bar",
+    },
+    storefrontSectionModuleService: {
+      resolve: "./src/modules/storefront-section",
+    },
+
   },
 } )

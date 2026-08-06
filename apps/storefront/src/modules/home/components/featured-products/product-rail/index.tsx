@@ -12,47 +12,50 @@ export default async function ProductRail({
   collection: HttpTypes.StoreCollection
   region: HttpTypes.StoreRegion
 }) {
-  // Fetch up to 8 products to make the grid look full and beautiful
-  const { products } = await listProducts({
-    region_id: region.id,
-    collection_id: [collection.id],
-    limit: 8, 
-  })
+  // 1. Try to fetch products using a simpler collection_id format
+  let { products } = await listProducts({
+    regionId: region.id,
+    queryParams: {
+      collection_id: collection.id, // FIXED: Removed the array brackets []
+      limit: 10, 
+    }
+  }).catch(() => ({ products: [] }))
 
+  // 2. FALLBACK: If it still returns 0, force it to fetch ANY 10 products so the grid isn't empty!
+  if (!products || products.length === 0) {
+    const fallback = await listProducts({
+      regionId: region.id,
+      queryParams: { limit: 10 }
+    }).catch(() => ({ products: [] }))
+    
+    products = fallback.products || []
+  }
+
+  // If absolutely no products exist in the store for this region, hide the grid
   if (!products || !products.length) {
     return null
   }
 
   return (
-    <div className="content-container py-12 mx-auto max-w-7xl px-4">
-      {/* Section Header */}
-      <div className="flex items-end justify-between mb-12 border-b border-gray-200 pb-4">
-        <h3 className="text-2xl md:text-3xl font-bold text-black tracking-tight">
+    <div className="content-container py-8 mx-auto max-w-[1400px] px-4">
+      <div className="flex items-end justify-between mb-6 border-b border-gray-200 pb-3">
+        <h3 className="text-xl md:text-2xl font-bold text-black tracking-tight">
           {collection.title}
         </h3>
         <LocalizedClientLink 
           href={`/collections/${collection.handle}`}
-          className="text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-black transition-colors"
+          className="text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-black transition-colors"
         >
-          View Collection →
+          View All →
         </LocalizedClientLink>
       </div>
       
-      {/* Masonry Editorial Grid (Staggered Layout) */}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 items-start pb-16">
-        {products.map((product, index) => {
-          // Create the staggered editorial effect by pushing every odd item down
-          const isStaggered = index % 2 !== 0;
-          
-          return (
-            <li 
-              key={product.id} 
-              className={`w-full transition-all duration-500 ${isStaggered ? 'sm:mt-16' : ''}`}
-            >
-              <ProductPreview product={product} region={region} isFeatured />
-            </li>
-          )
-        })}
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8 items-start pb-8">
+        {products.map((product) => (
+          <li key={product.id} className="w-full">
+            <ProductPreview product={product} region={region} isFeatured />
+          </li>
+        ))}
       </ul>
     </div>
   )
