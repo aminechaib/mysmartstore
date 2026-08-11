@@ -12,29 +12,17 @@ export default async function ProductRail({
   collection: HttpTypes.StoreCollection
   region: HttpTypes.StoreRegion
 }) {
-  // 1. Try to fetch products using a simpler collection_id format
-  let { products } = await listProducts({
+  const data = await listProducts({
     regionId: region.id,
     queryParams: {
-      collection_id: collection.id, // FIXED: Removed the array brackets []
-      limit: 10, 
+      collection_id: collection.id, 
+      limit: 5, 
     }
-  }).catch(() => ({ products: [] }))
+  }).catch(() => null)
 
-  // 2. FALLBACK: If it still returns 0, force it to fetch ANY 10 products so the grid isn't empty!
-  if (!products || products.length === 0) {
-    const fallback = await listProducts({
-      regionId: region.id,
-      queryParams: { limit: 10 }
-    }).catch(() => ({ products: [] }))
-    
-    products = fallback.products || []
-  }
+  const products = data?.response?.products || data?.products || []
 
-  // If absolutely no products exist in the store for this region, hide the grid
-  if (!products || !products.length) {
-    return null
-  }
+  if (!products.length) return null
 
   return (
     <div className="content-container py-8 mx-auto max-w-[1400px] px-4">
@@ -51,9 +39,10 @@ export default async function ProductRail({
       </div>
       
       <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8 items-start pb-8">
-        {products.map((product) => (
+        {products.map((product: any) => (
           <li key={product.id} className="w-full">
-            <ProductPreview product={product} region={region} isFeatured />
+            {/* WE NOW PASS THE COLLECTION HANDLE TO THE CARD */}
+            <ProductPreview product={product} region={region} collectionHandle={collection.handle} />
           </li>
         ))}
       </ul>

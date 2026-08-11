@@ -30,6 +30,12 @@ export default async function DynamicBuilder({
     console.error("Failed to fetch dynamic sections", error)
   }
 
+  // --- DEBUG TRACKER START ---
+  console.log("\n=== DYNAMIC BUILDER DEBUG ===")
+  console.log(`Total Collections available in Storefront: ${collections.length}`)
+  console.log(`Total Sections fetched from Database: ${sections.length}`)
+  // --- DEBUG TRACKER END ---
+
   if (!sections.length) {
     return (
       <div className="flex flex-col items-center justify-center h-[50vh] text-center px-4">
@@ -44,11 +50,16 @@ export default async function DynamicBuilder({
       {sections.map((section) => {
         const linkedCollection = collections.find(c => c.id === section.collection_id)
         
-        // Extract our new dynamic button settings!
-        const showButton = section.show_button !== false // Defaults to true if undefined
+        // --- DEBUG TRACKER START ---
+        console.log(`\nChecking Section: "${section.title}"`)
+        console.log(`- Type: ${section.type}`)
+        console.log(`- Saved Collection ID: ${section.collection_id}`)
+        console.log(`- Did we find a match?: ${linkedCollection ? "YES (" + linkedCollection.title + ")" : "NO"}`)
+        // --- DEBUG TRACKER END ---
+
+        const showButton = section.show_button !== false 
         const buttonLink = section.button_link || "/store"
 
-        // 1. RENDER: Cinematic Hero (Massive Top Banner)
         if (section.type === "hero") {
           return (
             <div key={section.id} className="relative w-full h-[85vh] flex items-center justify-center overflow-hidden mb-2">
@@ -58,8 +69,6 @@ export default async function DynamicBuilder({
               </div>
               <div className="relative z-10 text-center px-4 max-w-4xl animate-fade-in-up">
                 <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">{section.title}</h2>
-                
-                {/* DYNAMIC BUTTON */}
                 {showButton && (
                   <LocalizedClientLink href={buttonLink}>
                     <button className="px-10 py-4 bg-white text-black text-lg font-bold rounded-full hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3 )]">
@@ -72,7 +81,6 @@ export default async function DynamicBuilder({
           )
         }
 
-        // 2. RENDER: Campaign Banner (Smaller Mid-Page Banner)
         if (section.type === "banner" || section.type === "campaign") {
           return (
             <div key={section.id} className="relative w-full h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden my-8">
@@ -82,8 +90,6 @@ export default async function DynamicBuilder({
               </div>
               <div className="relative z-10 text-center px-4 animate-fade-in-up">
                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">{section.title}</h2>
-                
-                {/* DYNAMIC BUTTON */}
                 {showButton && (
                   <LocalizedClientLink href={buttonLink}>
                     <button className="px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform shadow-xl">
@@ -96,7 +102,6 @@ export default async function DynamicBuilder({
           )
         }
 
-        // 3. RENDER: Split-Screen Promotion
         if (section.type === "split_promo" || section.type === "promotion") {
           return (
             <div key={section.id} className="w-full max-w-7xl mx-auto px-4 py-12">
@@ -106,8 +111,6 @@ export default async function DynamicBuilder({
                 </div>
                 <div className="w-full md:w-1/2 p-8 md:p-16 text-center md:text-left animate-fade-in-up">
                   <h2 className="text-3xl md:text-5xl font-bold text-black mb-6 tracking-tight">{section.title}</h2>
-                  
-                  {/* DYNAMIC BUTTON */}
                   {showButton && (
                     <LocalizedClientLink href={buttonLink}>
                       <button className="px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors">
@@ -121,7 +124,6 @@ export default async function DynamicBuilder({
           )
         }
 
-        // 4. RENDER: Product Grid (Linked to a Collection)
         if ((section.type === "product_grid" || section.type === "new_arrivals") && linkedCollection) {
           return (
             <div key={section.id} className="w-full py-4">
