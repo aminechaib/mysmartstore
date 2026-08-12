@@ -9,6 +9,22 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx}",
     "./src/modules/**/*.{js,ts,jsx,tsx}",
   ],
+
+  // 🛠️ ADD THIS SAFELIST BLOCK:
+  safelist: [
+    // This tells Tailwind to NEVER delete these colors, so your database badges always work!
+    {
+      pattern: /(bg|text|border|from|to|via)-(red|orange|blue|cyan|green|yellow|purple|pink|indigo|teal|gray)-(100|200|300|400|500|600|700|800|900)/,
+      variants: ['hover', 'group-hover'],
+    },
+    'shadow-lg',
+    'shadow-xl',
+    'shadow-2xl',
+    'ring-1',
+    '-translate-y-1',
+    '-translate-y-2',
+  ],
+
   theme: {
     extend: {
       transitionProperty: {
