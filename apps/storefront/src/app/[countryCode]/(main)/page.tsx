@@ -87,20 +87,35 @@ export default async function Home(props: {
             )
           }
 
-                   // 2. Render Product Grid
+          // 2. Render Product Grid (Now supports MULTIPLE collections and LIMIT!)
           if (section.type === "product_grid" || section.type === "featured_products") {
-            const matchedCollection = collections?.find(c => c.id === section.collection_id)
             
-            if (matchedCollection) {
+            // Fallback to singular collection_id if collection_ids array is empty (for backwards compatibility)
+            const colIds = section.collection_ids?.length > 0 
+              ? section.collection_ids 
+              : (section.collection_id ? [section.collection_id] : [])
+
+            if (colIds.length > 0) {
               return (
-                <div key={section.id} className="py-8">
-                  {/* 🛠️ Pass the limit here! */}
-                  <ProductRail collection={matchedCollection} region={region} limit={10} />
+                <div key={section.id} className="py-4 flex flex-col gap-4">
+                  {colIds.map((cId: string) => {
+                    const matchedCollection = collections?.find(c => c.id === cId)
+                    if (matchedCollection) {
+                      return (
+                        <ProductRail 
+                          key={cId} 
+                          collection={matchedCollection} 
+                          region={region} 
+                          limit={section.limit || 8} // 🛠️ Pass the dynamic limit!
+                        />
+                      )
+                    }
+                    return null
+                  })}
                 </div>
               )
             }
           }
-
 
           return null
         })

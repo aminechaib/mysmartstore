@@ -19,18 +19,22 @@ const StorefrontSectionsPage = () => {
   const [imageUrl, setImageUrl] = useState("")
   const [animation, setAnimation] = useState("fade-up")
   
-  // NEW: Dynamic Button State
+  // Dynamic Button State
   const [showButton, setShowButton] = useState(true)
   const [buttonText, setButtonText] = useState("Shop Now")
   const [buttonLink, setButtonLink] = useState("/store")
+
+  // 🛠️ NEW: Multiple Collections & Limit State
+  const [collectionIds, setCollectionIds] = useState<string[]>([])
+  const [limit, setLimit] = useState<number>(8)
 
   const fetchData = async () => {
     try {
       const secRes = await fetch("/admin/storefront-sections")
       const secData = await secRes.json()
-      setSections(secData.sections || [])
+      setSections(secData.sections || secData.storefront_sections || [])
 
-      const colRes = await fetch("/admin/collections")
+      const colRes = await fetch("/admin/collections?limit=100")
       const colData = await colRes.json()
       setCollections(colData.collections || [])
     } catch (error) {
@@ -55,6 +59,8 @@ const StorefrontSectionsPage = () => {
     setShowButton(true)
     setButtonText("Shop Now")
     setButtonLink("/store")
+    setCollectionIds([])
+    setLimit(8)
   }
 
   const handleEdit = (sec: any) => {
@@ -67,6 +73,8 @@ const StorefrontSectionsPage = () => {
     setShowButton(sec.show_button ?? true)
     setButtonText(sec.button_text || "Shop Now")
     setButtonLink(sec.button_link || "/store")
+    setCollectionIds(sec.collection_ids || [])
+    setLimit(sec.limit || 8)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
@@ -130,6 +138,8 @@ const StorefrontSectionsPage = () => {
         title,
         type,
         collection_id: collectionId === "none" ? null : collectionId,
+        collection_ids: collectionIds, // 🛠️ Send the array of collections
+        limit: Number(limit),          // 🛠️ Send the limit
         image_url: finalImageUrl,
         animation,
         show_button: showButton,
@@ -157,6 +167,15 @@ const StorefrontSectionsPage = () => {
       toast.error("An error occurred while saving")
     }
     setIsSaving(false)
+  }
+
+  // 🛠️ Toggle checkbox logic
+  const toggleCollection = (id: string) => {
+    if (collectionIds.includes(id)) {
+      setCollectionIds(collectionIds.filter(cId => cId !== id))
+    } else {
+      setCollectionIds([...collectionIds, id])
+    }
   }
 
   return (
@@ -189,18 +208,43 @@ const StorefrontSectionsPage = () => {
             </Select>
           </div>
 
-          <div>
-            <Label>Link to Collection (For Product Grids)</Label>
-            <Select value={collectionId} onValueChange={setCollectionId}>
-              <Select.Trigger><Select.Value placeholder="Select collection" /></Select.Trigger>
-              <Select.Content>
-                <Select.Item value="none">-- No Collection --</Select.Item>
-                {collections.map(c => (
-                  <Select.Item key={c.id} value={c.id}>{c.title}</Select.Item>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
+          {/* 🛠️ CONDITIONAL RENDERING: Show Checkboxes for Product Grid, Dropdown for others */}
+          {type === "product_grid" ? (
+            <div className="md:col-span-2 flex flex-col gap-4 p-4 border rounded-md bg-ui-bg-subtle mt-2">
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Products per Collection (Limit)</Label>
+                <Input type="number" value={limit} onChange={(e) => setLimit(Number(e.target.value))} min={1} max={50} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label className="font-bold">Select Collections to Display</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {collections.map(c => (
+                    <div key={c.id} className="flex items-center gap-3">
+                      <Checkbox 
+                        id={c.id}
+                        checked={collectionIds.includes(c.id)} 
+                        onCheckedChange={() => toggleCollection(c.id)} 
+                      />
+                      <Label htmlFor={c.id} className="cursor-pointer">{c.title}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Label>Link to Collection (Optional)</Label>
+              <Select value={collectionId} onValueChange={setCollectionId}>
+                <Select.Trigger><Select.Value placeholder="Select collection" /></Select.Trigger>
+                <Select.Content>
+                  <Select.Item value="none">-- No Collection --</Select.Item>
+                  {collections.map(c => (
+                    <Select.Item key={c.id} value={c.id}>{c.title}</Select.Item>
+                  ))}
+                </Select.Content>
+              </Select>
+            </div>
+          )}
 
           <div>
             <Label>Animation Style</Label>
@@ -221,7 +265,6 @@ const StorefrontSectionsPage = () => {
             {imageUrl && !file && <p className="text-xs text-gray-500 mt-1">Current image saved.</p>}
           </div>
 
-          {/* NEW: Dynamic Button Controls */}
           <div className="md:col-span-2 flex items-center gap-2 mt-2 border-t pt-4">
             <Checkbox 
               id="showButton" 
@@ -252,6 +295,7 @@ const StorefrontSectionsPage = () => {
         </form>
       </Container>
 
+      {/* ... Table rendering remains exactly the same ... */}
       <Container>
         <Heading level="h2" className="mb-4 text-ui-fg-subtle">Page Layout (Drag & Drop Order)</Heading>
         <Table>
