@@ -7,6 +7,8 @@ import PreviewPrice from "./price"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { DEFAULT_CARD_STYLE } from "@lib/marketing-config"
 import { listCollections } from "@lib/data/collections"
+import QuickAddButton from "./quick-add-button"
+
 
 async function getDynamicBadges() {
   try {
@@ -69,10 +71,19 @@ export default async function ProductPreview({
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10" />
           
+
           <div className="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
-            <div className="w-full py-3 bg-white/90 backdrop-blur-sm text-black text-center text-sm font-bold rounded-full shadow-lg">
-              View Details
-            </div>
+            {/* Pass the first variant ID so it knows what to add! */}
+            {product.variants?.[0]?.id ? (
+              <QuickAddButton 
+                variantId={product.variants[0].id} 
+                title={product.title} 
+              />
+            ) : (
+              <div className="w-full py-3 bg-white/90 backdrop-blur-sm text-black text-center text-sm font-bold rounded-full shadow-lg">
+                View Details
+              </div>
+            )}
           </div>
         </div>
 
