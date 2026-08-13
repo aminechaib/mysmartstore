@@ -87,19 +87,20 @@ export default async function Home(props: {
             )
           }
 
-          // 2. Render Product Grid
+                   // 2. Render Product Grid
           if (section.type === "product_grid" || section.type === "featured_products") {
-            // 🛠️ FIX: Match by collection_id instead of handle!
             const matchedCollection = collections?.find(c => c.id === section.collection_id)
             
             if (matchedCollection) {
               return (
                 <div key={section.id} className="py-8">
-                  <ProductRail collection={matchedCollection} region={region} />
+                  {/* 🛠️ Pass the limit here! */}
+                  <ProductRail collection={matchedCollection} region={region} limit={10} />
                 </div>
               )
             }
           }
+
 
           return null
         })

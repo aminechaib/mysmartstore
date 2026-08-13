@@ -6,12 +6,11 @@ import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { DEFAULT_CARD_STYLE } from "@lib/marketing-config"
+import { listCollections } from "@lib/data/collections"
 
-// Fetch badges from your new database API!
 async function getDynamicBadges() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || 'http://localhost:9000'}/store/marketing-badges`, {
-      // 🛠️ ADD THIS HEADERS OBJECT:
       headers: {
         "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "",
       },
@@ -25,7 +24,6 @@ async function getDynamicBadges() {
   }
 }
 
-
 export default async function ProductPreview({
   product,
   region,
@@ -37,11 +35,17 @@ export default async function ProductPreview({
 }) {
   const { cheapestPrice } = getProductPrice({ product, region })
 
-  // Get all badges from the database
-  const badges = await getDynamicBadges()
+  // 1. Fetch badges and collections
+  const [badges, { collections }] = await Promise.all([
+    getDynamicBadges(),
+    listCollections({ fields: "id, handle", limit: 100 })
+  ])
   
-  // Find the badge that matches this product's collection
-  const badgeConfig = badges.find((b: any) => b.collection_handle === collectionHandle)
+  // 2. SMART DETECTION: Find the handle even if it wasn't passed as a prop!
+  const actualHandle = collectionHandle || collections?.find(c => c.id === product.collection_id)?.handle
+  
+  // 3. Find the matching badge
+  const badgeConfig = badges.find((b: any) => b.collection_handle === actualHandle)
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group block h-full">
@@ -49,10 +53,8 @@ export default async function ProductPreview({
         className={`relative h-full flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-500 
         ${badgeConfig ? badgeConfig.card_style : DEFAULT_CARD_STYLE}`}
       >
-        {/* Image Container */}
         <div className="relative w-full aspect-[4/5] bg-gray-100 overflow-hidden">
           
-          {/* DYNAMICALLY RENDER THE BADGE FROM THE DATABASE */}
           {badgeConfig && (
             <div className={`absolute top-0 right-0 z-30 ${badgeConfig.bg_class} text-white text-xs md:text-sm font-bold px-4 py-2 rounded-bl-xl shadow-lg whitespace-nowrap flex items-center justify-center min-w-[80px]`}>
               {badgeConfig.text}
@@ -74,7 +76,6 @@ export default async function ProductPreview({
           </div>
         </div>
 
-        {/* Text Container */}
         <div className="p-3 md:p-4 flex flex-col flex-grow">
           <h3 className="text-sm md:text-base font-medium text-gray-800 line-clamp-2 min-h-[2.5rem] md:min-h-[3rem] mb-3 group-hover:text-blue-600 transition-colors leading-tight">
             {product.title}
