@@ -1,14 +1,11 @@
 // File: apps/storefront/src/modules/products/templates/index.tsx
+// --- PART 1 OF 3 (WITH NEW SLIDER) ---
 
-import { Suspense } from "react"
-import ImageGallery from "@modules/products/components/image-gallery"
-import ProductActions from "@modules/products/components/product-actions"
-import ProductTabs from "@modules/products/components/product-tabs"
-import RelatedProducts from "@modules/products/components/related-products"
-import ProductInfo from "@modules/products/templates/product-info"
+import React, { Suspense } from "react"
 import { notFound } from "next/navigation"
-import ProductActionsWrapper from "./product-actions-wrapper"
 import { HttpTypes } from "@medusajs/types"
+import ProductActions from "@modules/products/components/product-actions"
+import ProductSlider from "@modules/products/components/product-slider" // 🛠️ IMPORTED SLIDER
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -16,47 +13,66 @@ type ProductTemplateProps = {
   countryCode: string
 }
 
-const ProductTemplate: React.FC<ProductTemplateProps> = ({
+export default function ProductTemplate({
   product,
   region,
   countryCode,
-}) => {
+}: ProductTemplateProps) {
   if (!product || !product.id) {
     return notFound()
   }
 
+  const warranty = product.metadata?.warranty as string || "Standard 1-Year Warranty"
+
   return (
-    <>
-      <div className="content-container flex flex-col small:flex-row small:items-start py-12 relative gap-y-8 gap-x-16 mx-auto max-w-7xl px-4">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-12 md:py-24">
+      <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 relative">
         
-        {/* Left Side: Massive Scrolling Images */}
-        <div className="block w-full small:w-[60%] relative">
-          <ImageGallery images={product?.images || []} />
+        {/* LEFT COLUMN: The Beautiful New Slider */}
+        <div className="w-full lg:w-2/3">
+          <ProductSlider images={product.images || []} title={product.title} />
         </div>
 
-        {/* Right Side: Sticky Product Info & Add to Cart */}
-        <div className="flex flex-col w-full small:w-[40%] gap-y-8 small:sticky small:top-24 py-4">
-          <ProductInfo product={product} />
-          
-          {/* Premium Add to Cart Box */}
-          <div className="flex flex-col gap-y-6 bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100">
-            <Suspense fallback={<ProductActions product={product} region={region} />}>
-              <ProductActionsWrapper id={product.id} region={region} />
-            </Suspense>
+
+        {/* --- PART 2 OF 3 --- */}
+        {/* RIGHT COLUMN: Sticky Product Info */}
+        <div className="w-full lg:w-1/3">
+          <div className="sticky top-32 flex flex-col gap-8">
+            
+            {/* Product Header */}
+            <div className="flex flex-col gap-4">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900">
+                {product.title}
+              </h1>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
+
+            {/* 🛠️ Custom Warranty Box (From our Quick Add API!) */}
+            <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 flex items-start gap-4">
+              <div className="bg-blue-100 text-blue-600 p-3 rounded-full shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-gray-900">Included Protection</span>
+                <span className="text-gray-600 text-sm mt-1">{warranty}</span>
+              </div>
+            </div>
+            {/* --- PART 3 OF 3 --- */}
+            {/* Price & Add to Cart (Medusa's Interactive Component) */}
+            <div className="mt-4">
+              <Suspense fallback={<div className="h-24 bg-gray-100 animate-pulse rounded-2xl" />}>
+                <ProductActions product={product} region={region} />
+              </Suspense>
+            </div>
+
           </div>
-
-          <ProductTabs product={product} />
         </div>
+        
       </div>
-
-      {/* Related Products Section */}
-      <div className="content-container my-32 mx-auto max-w-7xl px-4 border-t border-gray-200 pt-16">
-        <Suspense fallback={<div>Loading related products...</div>}>
-          <RelatedProducts product={product} countryCode={countryCode} />
-        </Suspense>
-      </div>
-    </>
+    </div>
   )
 }
-
-export default ProductTemplate

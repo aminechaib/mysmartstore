@@ -2,6 +2,7 @@
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createProductsWorkflow } from "@medusajs/core-flows"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export async function POST(req: MedusaRequest, res: MedusaResponse ) {
   try {
@@ -19,10 +20,14 @@ export async function POST(req: MedusaRequest, res: MedusaResponse ) {
       return res.status(400).json({ error: "Title and Price are required." })
     }
 
-    // 1. Get the default sales channel
+    // 1. Get the default sales channel & default stock location
     const salesChannelService = req.scope.resolve("sales_channel")
     const channels = await salesChannelService.listSalesChannels()
     const defaultChannel = channels[0]
+
+    const stockLocationService = req.scope.resolve("stock_location")
+    const locations = await stockLocationService.listStockLocations()
+    const defaultLocation = locations[0]
 
     // 2. Build the perfect Tech Product payload
     const productPayload = {
@@ -31,34 +36,51 @@ export async function POST(req: MedusaRequest, res: MedusaResponse ) {
       collection_id: collection_id !== "none" ? collection_id : undefined,
       sales_channels: defaultChannel ? [{ id: defaultChannel.id }] : [],
       images: image_url ? [{ url: image_url }] : [],
-      metadata: { 
-        warranty: warranty || "No warranty specified" // 🛠️ Saves your custom warranty!
-      },
-      
-      // Auto-create the dummy "Model" option so Medusa is happy
+      metadata: { warranty: warranty || "No warranty specified" },
       options: [{ title: "Model", values: ["Standard"] }],
       variants: [
         {
           title: "Standard",
-          sku: sku || `REF-${Date.now()}`, // Auto-generates a reference if you leave it blank!
-          manage_inventory: false, // Keeps it instantly available for purchase
-          prices: [
-            {
-              currency_code: "qar",
-              amount: Number(price),
-            },
-          ],
+          sku: sku || `REF-${Date.now()}`, 
+          manage_inventory: true, // Track inventory
+          prices: [{ currency_code: "qar", amount: Number(price) }],
           options: { "Model": "Standard" },
         },
       ],
     }
 
-    // 3. Run the official Medusa workflow
+    // 3. Create the product
     const { result } = await createProductsWorkflow(req.scope).run({
       input: { products: [productPayload] },
     })
 
-    res.json({ success: true, product: result[0] })
+    const createdProduct = result[0]
+    const variantId = createdProduct.variants[0].id
+
+    // 4. 🛠️ AUTO-LINK TO WAREHOUSE: Find the new inventory item and link it to the location!
+    if (defaultLocation) {
+      const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+      const { data: variantInventory } = await query.graph({
+        entity: "variant",
+        fields: ["inventory_items.inventory_item_id"],
+        filters: { id: variantId }
+      })
+
+      const inventoryItemId = variantInventory[0]?.inventory_items?.[0]?.inventory_item_id
+
+      if (inventoryItemId) {
+        const inventoryService = req.scope.resolve("inventory")
+        await inventoryService.createInventoryLevels([
+          {
+            inventory_item_id: inventoryItemId,
+            location_id: defaultLocation.id,
+            stocked_quantity: 0, // Starts at 0, ready for you to add stock!
+          }
+        ])
+      }
+    }
+
+    res.json({ success: true, product: createdProduct })
   } catch (error: any) {
     console.error("Quick Product Error:", error.message)
     res.status(500).json({ error: error.message })
