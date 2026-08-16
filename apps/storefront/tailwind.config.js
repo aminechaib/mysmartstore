@@ -10,11 +10,15 @@ module.exports = {
     "./src/modules/**/*.{js,ts,jsx,tsx}",
   ],
 
-  // 🛠️ ADD THIS SAFELIST BLOCK:
+  // 🛠️ UPDATED SAFELIST BLOCK:
   safelist: [
-    // This tells Tailwind to NEVER delete these colors, so your database badges always work!
+    'bg-gradient-to-r',
+    'bg-gradient-to-l',
+    'bg-gradient-to-t',
+    'bg-gradient-to-b',
     {
-      pattern: /(bg|text|border|from|to|via)-(red|orange|blue|cyan|green|yellow|purple|pink|indigo|teal|gray)-(100|200|300|400|500|600|700|800|900)/,
+      // Added sky, emerald, rose, amber, fuchsia, etc. so you have EVERY color!
+      pattern: /(bg|text|border|from|to|via)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|gray|slate|zinc|neutral|stone)-(100|200|300|400|500|600|700|800|900)/,
       variants: ['hover', 'group-hover'],
     },
     'shadow-lg',
@@ -24,6 +28,7 @@ module.exports = {
     '-translate-y-1',
     '-translate-y-2',
   ],
+
 
   theme: {
     extend: {
