@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: medusa-backend
+    env: node
+    buildCommand: pnpm install && pnpm run build --filter=@dtc/backend && cd apps/backend && pnpm run migrate
+    startCommand: cd apps/backend && pnpm start
+    envVars:
+      - key: DATABASE_URL
+        scope: run_and_build
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "9000"
