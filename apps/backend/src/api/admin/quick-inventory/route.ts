@@ -1,7 +1,7 @@
 // File: apps/backend/src/api/admin/quick-inventory/route.ts
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse ) {
   try {
@@ -58,8 +58,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       })
     }
 
-    const inventoryService = req.scope.resolve("inventory")
-    const stockLocationService = req.scope.resolve("stock_location")
+    const inventoryService = req.scope.resolve(Modules.INVENTORY)
+    const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
 
     let targetLocationId = location_id
     if (!targetLocationId) {

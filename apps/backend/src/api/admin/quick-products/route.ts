@@ -2,7 +2,7 @@
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createProductsWorkflow } from "@medusajs/core-flows"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
 export async function POST(req: MedusaRequest, res: MedusaResponse ) {
   try {
@@ -21,11 +21,11 @@ export async function POST(req: MedusaRequest, res: MedusaResponse ) {
     }
 
     // 1. Get the default sales channel & default stock location
-    const salesChannelService = req.scope.resolve("sales_channel")
+    const salesChannelService = req.scope.resolve(Modules.SALES_CHANNEL)
     const channels = await salesChannelService.listSalesChannels()
     const defaultChannel = channels[0]
 
-    const stockLocationService = req.scope.resolve("stock_location")
+    const stockLocationService = req.scope.resolve(Modules.STOCK_LOCATION)
     const locations = await stockLocationService.listStockLocations({})
     const defaultLocation = locations[0]
 
@@ -69,7 +69,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse ) {
       const inventoryItemId = variantInventory[0]?.inventory_items?.[0]?.inventory_item_id
 
       if (inventoryItemId) {
-        const inventoryService = req.scope.resolve("inventory")
+        const inventoryService = req.scope.resolve(Modules.INVENTORY)
         await inventoryService.createInventoryLevels([
           {
             inventory_item_id: inventoryItemId,

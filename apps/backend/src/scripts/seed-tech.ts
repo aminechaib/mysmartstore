@@ -2,10 +2,10 @@
 
 import { ExecArgs } from "@medusajs/framework/types"
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows"
-import { Modules } from "@medusajs/framework/utils"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export default async function seedTechProducts({ container }: ExecArgs) {
-  const logger = container.resolve("logger") as any
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER) as any
   logger.info("🚀 Starting massive tech products seed...")
 
   const salesChannelService = container.resolve(Modules.SALES_CHANNEL) as any
