@@ -21,7 +21,7 @@ async function getDynamicBadges() {
     if (!res.ok) return []
     const data = await res.json()
     return data.badges || []
-  } catch (error) {
+  } catch (_error) {
     return []
   }
 }
@@ -44,10 +44,10 @@ export default async function ProductPreview({
   ])
   
   // 2. SMART DETECTION: Find the handle even if it wasn't passed as a prop!
-  const actualHandle = collectionHandle || collections?.find(c => c.id === product.collection_id)?.handle
+  const actualHandle = collectionHandle || collections?.find((c: Record<string, unknown>) => c.id === product.collection_id)?.handle
   
   // 3. Find the matching badge
-  const badgeConfig = badges.find((b: any) => b.collection_handle === actualHandle)
+  const badgeConfig = badges.find((b: Record<string, unknown>) => b.collection_handle === actualHandle)
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group block h-full">

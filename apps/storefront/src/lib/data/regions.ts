@@ -9,13 +9,17 @@ export const listRegions = async () => {
     ...(await getCacheOptions("regions")),
   }
 
-  return await sdk.client
-    .fetch<{ regions: HttpTypes.StoreRegion[] }>(`/store/regions`, {
-      method: "GET",
-      next,
-      cache: "force-cache",
-    })
-    .then(({ regions }) => regions)
+  try {
+    return await sdk.client
+      .fetch<{ regions: HttpTypes.StoreRegion[] }>(`/store/regions`, {
+        method: "GET",
+        next,
+        cache: "force-cache",
+      })
+      .then(({ regions }) => regions)
+  } catch (_error) {
+    return []
+  }
 }
 
 export const retrieveRegion = async (id: string) => {
@@ -23,13 +27,17 @@ export const retrieveRegion = async (id: string) => {
     ...(await getCacheOptions(["regions", id].join("-"))),
   }
 
-  return await sdk.client
-    .fetch<{ region: HttpTypes.StoreRegion }>(`/store/regions/${id}`, {
-      method: "GET",
-      next,
-      cache: "force-cache",
-    })
-    .then(({ region }) => region)
+  try {
+    return await sdk.client
+      .fetch<{ region: HttpTypes.StoreRegion }>(`/store/regions/${id}`, {
+        method: "GET",
+        next,
+        cache: "force-cache",
+      })
+      .then(({ region }) => region)
+  } catch (_error) {
+    return null
+  }
 }
 
 const regionMap = new Map<string, HttpTypes.StoreRegion>()

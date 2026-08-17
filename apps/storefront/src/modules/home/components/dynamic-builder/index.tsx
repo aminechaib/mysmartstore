@@ -14,7 +14,7 @@ export default async function DynamicBuilder({
   region: HttpTypes.StoreRegion
   collections: HttpTypes.StoreCollection[]
 } ) {
-  let sections: any[] = []
+  let sections: Record<string, unknown>[] = []
   
   try {
     const res = await fetch(`${BACKEND_URL}/store/storefront-sections`, {

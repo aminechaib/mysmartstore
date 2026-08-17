@@ -278,32 +278,32 @@ export async function applyPromotions(codes: string[]) {
     .catch(medusaError)
 }
 
-export async function applyGiftCard(code: string) {
+export async function applyGiftCard(_code: string) {
   //   const cartId = getCartId()
   //   if (!cartId) return "No cartId cookie found"
   //   try {
   //     await updateCart(cartId, { gift_cards: [{ code }] }).then(() => {
   //       revalidateTag("cart")
   //     })
-  //   } catch (error: any) {
+  //   } catch (error: unknown) {
   //     throw error
   //   }
 }
 
-export async function removeDiscount(code: string) {
+export async function removeDiscount(_code: string) {
   // const cartId = getCartId()
   // if (!cartId) return "No cartId cookie found"
   // try {
   //   await deleteDiscount(cartId, code)
   //   revalidateTag("cart")
-  // } catch (error: any) {
+  // } catch (error: unknown) {
   //   throw error
   // }
 }
 
 export async function removeGiftCard(
-  codeToRemove: string,
-  giftCards: any[]
+  _codeToRemove: string,
+  _giftCards: Record<string, unknown>[]
   // giftCards: GiftCard[]
 ) {
   //   const cartId = getCartId()
@@ -316,20 +316,21 @@ export async function removeGiftCard(
   //     }).then(() => {
   //       revalidateTag("cart")
   //     })
-  //   } catch (error: any) {
+  //   } catch (error: unknown) {
   //     throw error
   //   }
 }
 
 export async function submitPromotionForm(
-  currentState: unknown,
+  _currentState: unknown,
   formData: FormData
 ) {
   const code = formData.get("code") as string
   try {
     await applyPromotions([code])
-  } catch (e: any) {
-    return e.message
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error"
+    return errorMessage
   }
 }
 
@@ -358,7 +359,7 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         phone: formData.get("shipping_address.phone"),
       },
       email: formData.get("email"),
-    } as any
+    } as Record<string, unknown>
 
     const sameAsBilling = formData.get("same_as_billing")
     if (sameAsBilling === "on") data.billing_address = data.shipping_address
@@ -377,8 +378,9 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         phone: formData.get("billing_address.phone"),
       }
     await updateCart(data)
-  } catch (e: any) {
-    return e.message
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error"
+    return errorMessage
   }
 
   redirect(

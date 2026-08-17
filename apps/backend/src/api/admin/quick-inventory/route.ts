@@ -63,7 +63,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
     let targetLocationId = location_id
     if (!targetLocationId) {
-      const locations = await stockLocationService.listStockLocations()
+      const locations = await stockLocationService.listStockLocations({})
       targetLocationId = locations[0]?.id
     }
 

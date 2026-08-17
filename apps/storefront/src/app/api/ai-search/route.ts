@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
     const chatResponse = await client.chat.complete({
       model: "mistral-small-latest",
-      messages: messages as any,
+      messages: messages as Record<string, string>[],
       responseFormat: { type: "json_object" }
     });
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     let parsedAi;
     try {
       parsedAi = JSON.parse(aiContent);
-    } catch (e) {
+    } catch (_e) {
       parsedAi = { message: "I couldn't process that request.", search_term: "" };
     }
 
@@ -106,8 +106,9 @@ export async function POST(request: Request) {
       products: products 
     });
 
-  } catch (error: any) {
-    console.error("AI Search Error:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("AI Search Error:", errorMessage);
     return NextResponse.json({ error: "Something went wrong with the AI search." }, { status: 500 });
   }
 }

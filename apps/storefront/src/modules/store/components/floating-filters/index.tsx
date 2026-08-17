@@ -6,7 +6,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import RefinementList from "../refinement-list"
 
-export default function FloatingFilters({ sortBy }: { sortBy: any }) {
+export default function FloatingFilters({ sortBy }: { sortBy: Record<string, unknown> }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (

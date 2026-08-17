@@ -26,7 +26,7 @@ async function getStorefrontSections() {
     const data = await res.json()
     if (Array.isArray(data)) return data
     return data.storefront_sections || data.sections || data.data || []
-  } catch (error) {
+  } catch (_error) {
     return []
   }
 }
@@ -53,7 +53,7 @@ export default async function Home(props: {
       <Hero />
 
       {sections.length > 0 ? (
-        sections.map((section: any) => {
+        sections.map((section: Record<string, unknown>) => {
           
           // 1. Render Promo / Hero Banner
           if (section.type === "promo" || section.type === "banner" || section.type === "hero") {

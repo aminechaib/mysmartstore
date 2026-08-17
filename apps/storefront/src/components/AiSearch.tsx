@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function AiSearch() {
   const [query, setQuery] = useState("");
   const [aiResponse, setAiResponse] = useState("");
-  const [products, setProducts] = useState<any[]>([]); // <-- New state for products
+  const [products, setProducts] = useState<Record<string, unknown>[]>([]); // <-- New state for products
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -34,8 +34,8 @@ export default function AiSearch() {
       } else {
         setAiResponse("Sorry, I had trouble understanding that. Please try again.");
       }
-    } catch (error) {
-      console.error("Search failed:", error);
+    } catch (_error) {
+      console.error("Search failed:", _error);
       setAiResponse("An error occurred while searching.");
     } finally {
       setIsLoading(false);

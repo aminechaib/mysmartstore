@@ -10,7 +10,7 @@ export default function FloatingAiBubble() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [aiResponse, setAiResponse] = useState("");
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Record<string, unknown>[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -34,7 +34,7 @@ export default function FloatingAiBubble() {
       } else {
         setAiResponse("Sorry, I had trouble understanding that.");
       }
-    } catch (error) {
+    } catch (_error) {
       setAiResponse("An error occurred while searching.");
     } finally {
       setIsLoading(false);

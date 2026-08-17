@@ -26,7 +26,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse ) {
     const defaultChannel = channels[0]
 
     const stockLocationService = req.scope.resolve("stock_location")
-    const locations = await stockLocationService.listStockLocations()
+    const locations = await stockLocationService.listStockLocations({})
     const defaultLocation = locations[0]
 
     // 2. Build the perfect Tech Product payload

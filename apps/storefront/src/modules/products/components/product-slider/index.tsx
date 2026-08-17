@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
-export default function ProductSlider({ images, title }: { images: any[], title: string }) {
+export default function ProductSlider({ images, title }: { images: Record<string, unknown>[], title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   if (!images || images.length === 0) {

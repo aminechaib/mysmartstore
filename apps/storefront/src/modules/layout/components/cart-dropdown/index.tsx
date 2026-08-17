@@ -143,7 +143,7 @@ const CartDropdown = ({
                         <CartIcon />
                       </div>
                       <h3 className="text-2xl font-bold text-black tracking-tight">Your cart is empty</h3>
-                      <p className="text-gray-500">Looks like you haven't added anything yet.</p>
+                      <p className="text-gray-500">Looks like you haven&apos;t added anything yet.</p>
                       <LocalizedClientLink href="/store" onClick={() => setCartOpen(false)}>
                         <button className="mt-4 px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl hover:-translate-y-1">
                           Explore Products

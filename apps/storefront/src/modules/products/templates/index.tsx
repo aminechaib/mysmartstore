@@ -16,7 +16,7 @@ type ProductTemplateProps = {
 export default function ProductTemplate({
   product,
   region,
-  countryCode,
+  _countryCode,
 }: ProductTemplateProps) {
   if (!product || !product.id) {
     return notFound()

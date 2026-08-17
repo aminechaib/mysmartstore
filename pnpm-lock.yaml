@@ -38,6 +38,9 @@ importers:
       '@medusajs/cli':
         specifier: 2.18.0
         version: 2.18.0(@types/node@20.19.26)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
+      '@medusajs/core-flows':
+        specifier: 2.18.0
+        version: 2.18.0(@medusajs/framework@2.18.0(@medusajs/cli@2.18.0(@types/node@20.19.26)(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))(@types/node@20.19.26)(debug@4.4.3(supports-color@8.1.1))(ioredis@5.8.2(supports-color@8.1.1))(supports-color@8.1.1)(vite@5.4.21(@types/node@20.19.26)(terser@5.49.0))(zod@4.2.0))
       '@medusajs/dashboard':
         specifier: 2.18.0
         version: 2.18.0(@types/react-dom@18.2.25)(@types/react@18.3.31)(typescript@5.9.3)

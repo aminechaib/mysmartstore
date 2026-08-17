@@ -44,7 +44,7 @@ export default function QuickAddButton({
           countryCode,
         })
         setToast({ message: `${title} added to cart!`, type: "success" })
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error)
         setToast({ message: "Failed to add to cart. Out of stock?", type: "error" })
       }
