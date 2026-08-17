@@ -2,7 +2,7 @@ services:
   - type: web
     name: medusa-backend
     env: node
-    buildCommand: pnpm install && pnpm run build --filter=@dtc/backend && cd apps/backend && pnpm run migrate
+    buildCommand: pnpm install && pnpm --filter=@dtc/backend run build && cd apps/backend && pnpm run migrate
     startCommand: cd apps/backend && pnpm start
     envVars:
       - key: DATABASE_URL
