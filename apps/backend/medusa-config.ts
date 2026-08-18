@@ -28,7 +28,7 @@ module.exports = defineConfig({
     },
 // Inside apps/backend/medusa-config.ts, add this to your modules object:
     marketingModuleService: {
-      resolve: "./src/modules/marketing",
+     resolve: "./src/modules/marketing-badges",
     },
 
   },
