@@ -1,7 +1,7 @@
 // File: apps/backend/src/api/admin/marketing-badges/route.ts
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { MARKETING_MODULE } from "../../../modules/marketing"
+import { MARKETING_MODULE } from "../../../modules/marketing-badges"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse ) {
   try {
